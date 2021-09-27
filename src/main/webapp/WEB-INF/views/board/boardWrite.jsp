@@ -11,11 +11,30 @@
 
 	$j(document).ready(function(){
 		
-		$j("#submit").on("click",function(){
+		$j("#submit").on("click", function(){
 			var $frm = $j('.boardWrite :input');
 			var param = $frm.serialize();
 			
+			if ($j("#boardTitle").val()=="") {
+				alert("제목을 입력하세요"); 
+				$("#boardTitle").focus();
+				return false; 
+			}
+			
+			if ($j("#boardComment").val()==""){
+				alert("내용을 입력하세요"); 
+				$("#boardComment").focus();
+				return false; 
+			}
+			
 			$j.ajax({
+				// (Yi's code)
+				// to send send-file form-data to ajax, we need to set enctype, processData, ContentType
+				/* enctype : 'multipart/form-data',
+				processData : false,
+				contentType : false,
+				cache : false,  */
+				//
 			    url : "/board/boardWriteAction.do",
 			    dataType: "json",
 			    type: "POST",
@@ -25,29 +44,40 @@
 					alert("작성완료");
 					
 					alert("메세지:"+data.success);
-					
-					location.href = "/board/boardList.do?pageNo=";
-			    },
+					<!-- Yi: after success, the web browser will show this page --> 
+					location.href = "/board/boardList.do?pageNo=1";  // Yi's code: pageNo= --> pageNo=1   ${pageNo}
+			    }, 
 			    error: function (jqXHR, textStatus, errorThrown)
 			    {
 			    	alert("실패");
 			    }
 			});
 		});
+				
+		$j("#btn_add").on("click", function(){
+ 			$j(".table").append("<p><table><tr><td>First</td></tr><tr>hello</tr></table></p>");  
+ 				
+				return;
+		});
 	});
 	
+	
+		
+
+		
+		
+		
 
 </script>
-<body>
-<form class="boardWrite">
-	<table align="center">
+<body> <!-- <body onload="addForm();"> -->
+<form class="boardWrite" >  
+	<table align="center" class="table">
 		<tr>
 			<td align="right">
 			<input id="submit" type="button" value="작성">
-			<!-- Yi's codes -->
-			<input id="edit" type="button" value="수정">
-			<input id="delete" type="button" value="삭제">
-			<!--  -->
+			<input id="btn_add" type="button" name= "btn_add" value="행추가">
+			<input id="pageNo" type="hidden" value="${pageNo}"> 
+			<input type="hidden" name="count" value="0">
 			</td>
 		</tr>
 		<tr>
@@ -55,10 +85,24 @@
 				<table border ="1"> 
 					<tr>
 						<td width="120" align="center">
+						Type
+						</td>
+						<td width="400">
+					
+						<select name="boardType" id="boardType" value="${boardType}">
+							<option value="a01">일반</option>
+							<option value="a02">Q&A</option>  <!--  add an extra space to match 4byte at DB -->
+							<option value="a03">익명</option>
+							<option value="a04">자유</option>
+						</select>
+						</td>
+					</tr>
+					<tr>
+						<td width="120" align="center">
 						Title
 						</td>
 						<td width="400">
-						<input name="boardTitle" type="text" size="50" value="${board.boardTitle}"> 
+						<input name="boardTitle" id="boardTitle" type="text" size="50" value="${board.boardTitle}"> 
 						</td>
 					</tr>
 					<tr>
@@ -66,7 +110,7 @@
 						Comment
 						</td>
 						<td valign="top">
-						<textarea name="boardComment"  rows="20" cols="55">${board.boardComment}</textarea>
+						<textarea name="boardComment" id="boardComment" rows="20" cols="55">${board.boardComment}</textarea>
 						</td>
 					</tr>
 					<tr>
@@ -85,6 +129,7 @@
 			</td>
 		</tr>
 	</table>
+	<div id="addedFormDiv"></div><br>
 </form>	
 </body>
 </html>

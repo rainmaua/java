@@ -3,6 +3,7 @@ package com.spring.board.dao;
 import java.util.List;
 
 import com.spring.board.vo.BoardVo;
+import com.spring.board.vo.ComCodeVo;
 import com.spring.board.vo.PageVo;
 
 public interface BoardDao {
@@ -16,5 +17,14 @@ public interface BoardDao {
 	public int selectBoardCnt() throws Exception;
 
 	public int boardInsert(BoardVo boardVo) throws Exception;
-
+	
+//	// Yi's code
+	public int boardUpdate(BoardVo boardVo) throws Exception; 
+	
+	public int boardDelete(BoardVo boardVo) throws Exception;
+	
+	
+	public List<ComCodeVo> selectKindList() throws Exception;
+	
+	public int getKindCount() throws Exception; 
 }

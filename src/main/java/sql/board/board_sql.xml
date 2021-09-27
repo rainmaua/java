@@ -7,11 +7,22 @@
     	<result property="boardNum" 	column="BOARD_NUM"/>
     	<result property="boardTitle" 	column="BOARD_TITLE"/>
     	<result property="boardComment" column="BOARD_COMMENT"/>
+    	
+    	<result property="codeId" 		column="CODE_ID"/>
+    	<result property="codeName" 	column="CODE_NAME"/>
     </resultMap>
     
+    <resultMap type="com.spring.board.vo.ComCodeVo" id="comCodeVo">
+		<result property="codeType" 	column="CODE_TYPE"/>
+		<result property="codeId" 		column="CODE_ID"/>
+    	<result property="codeName" 	column="CODE_NAME"/>
+	</resultMap>
+	
+    <!--Yi : 게시글 목록 조회 -->
     <select id="boardList" parameterType="com.spring.board.vo.PageVo" resultMap="boardVo">
         SELECT 
-		  BOARD_TYPE
+           CODE_NAME  <!--  20210923 CODE_NAME or CODE_ID??  -->
+		  ,BOARD_TYPE
 		  ,BOARD_NUM
 		  ,BOARD_TITLE
 		  ,BOARD_COMMENT
@@ -19,16 +30,32 @@
 		FROM 
 		(
 		  SELECT
-		      	BOARD_TYPE
+		  		 CODE_NAME  <!--  CODE_NAME or CODE_ID??  -->
+		      	,BOARD_TYPE
 				,BOARD_NUM
 				,BOARD_TITLE
 				,BOARD_COMMENT
 		      	,ROW_NUMBER() OVER(ORDER BY BOARD_NUM DESC) AS NUMROW
 		      	,COUNT(*) OVER() AS TOTAL_CNT
 			FROM
-				BOARD	
+				BOARD, COM_CODE	
+			WHERE 
+				CODE_ID = BOARD_TYPE<!-- original: WHERE NUMROW BETWEEN (#{pageNo}-1)*10 + 1 AND (#{pageNo})*10  -->
+			 						<!--  version2: WHERE BOARD.MODIFIER != ' ' AND CODE_ID = BOARD_TYPE  -->
 		)
-		WHERE NUMROW BETWEEN (#{pageNo}-1)*10 + 1 AND (#{pageNo})*10
+		WHERE NUMROW BETWEEN (#{pageNo}-1)*10 + 1 AND (#{pageNo})*10 
+    </select>
+    
+      <!-- showing writings categorized by board_type -->
+      
+    <select id="selectKindList" parameterType="com.spring.board.vo.ComCodeVo" resultMap="comCodeVo">
+        SELECT 
+        	CODE_NAME
+        	,CODE_ID
+		FROM 
+			COM_CODE
+		WHERE 
+			CODE_TYPE = 'menu'
     </select>
     
     <select id="boardTotal" parameterType="Integer" resultType="Integer">
@@ -37,7 +64,8 @@
 			FROM
 				BOARD	
     </select>
-    	
+    
+    <!-- Yi : 게시글 뷰 -->
     <select id="boardView" parameterType="com.spring.board.vo.BoardVo" resultMap="boardVo">
     	SELECT
         	BOARD_TYPE
@@ -50,6 +78,7 @@
     	AND 	BOARD_NUM  = #{boardNum}
     </select>	
     
+    <!-- Yi : 게시글 삽입 -->
     <select id="boardInsert" parameterType="com.spring.board.vo.BoardVo">
         INSERT INTO 
         BOARD
@@ -63,10 +92,9 @@
         ,MODIFIED_TIME
         )
         VALUES
-        ('1'
-        ,(SELECT TO_NUMBER(MAX(BOARD_NUM)+1)
-	    FROM BOARD
-	    WHERE BOARD_TYPE = '1')
+        (#{boardType}
+        ,(SELECT NVL(TO_NUMBER(MAX(BOARD_NUM)+1),1)  <!-- original: (SELECT TO_NUMBER(MAX(BOARD_NUM)+1) FROM BOARD WHERE BOARD_TYPE = '일반' ), changed to pass null values by converting null to 1 -->
+       	FROM BOARD)  
         ,#{boardTitle}
         ,#{boardComment}
         ,'SYSTEM'
@@ -75,4 +103,19 @@
         ,TO_CHAR(SYSDATE)
         )
     </select>
+    
+    <!-- Yi : 게시글 수정 --> 
+    <update id= "boardUpdate" parameterType="com.spring.board.vo.BoardVo" >
+    	UPDATE BOARD 
+    	SET BOARD_TITLE = #{boardTitle}
+    		,BOARD_COMMENT = #{boardComment} 
+    	WHERE BOARD_NUM= #{boardNum}
+ 	</update>
+ 	<!--  -->
+ 	<!-- Yi : 게시글  삭제 -->
+ 	<delete id= "boardDelete" parameterType="com.spring.board.vo.BoardVo" >
+ 		DELETE 
+ 		FROM BOARD 
+ 		WHERE BOARD_NUM = #{boardNum}
+ 	</delete>
 </mapper>

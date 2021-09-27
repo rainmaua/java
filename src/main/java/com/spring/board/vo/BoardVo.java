@@ -10,6 +10,34 @@ public class BoardVo {
 	private String	modifier;
 	private int totalCnt;
 	
+	// from Com_code table 
+	private String codeType;
+	private String codeId;
+	private String codeName;
+	
+	public String getCodeType() {
+		return codeType;
+	}
+	public void setCodeType(String codeType) {
+		this.codeType = codeType;
+	}
+	public String getCodeId() {
+		return codeId;
+	}
+	public void setCodeId(String codeId) {
+		this.codeId = codeId;
+	}
+	public String getCodeName() {
+		return codeName;
+	}
+	public void setCodeName(String codeName) {
+		this.codeName = codeName;
+	}
+	
+	
+	
+	
+	
 	
 	public int getTotalCnt() {
 		return totalCnt;

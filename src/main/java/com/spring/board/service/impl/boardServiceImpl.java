@@ -1,6 +1,7 @@
 package com.spring.board.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.spring.board.dao.BoardDao;
 import com.spring.board.service.boardService;
 import com.spring.board.vo.BoardVo;
+import com.spring.board.vo.ComCodeVo;
 import com.spring.board.vo.PageVo;
 
 @Service
@@ -51,5 +53,29 @@ public class boardServiceImpl implements boardService{
 		// TODO Auto-generated method stub
 		return boardDao.boardInsert(boardVo);
 	}
+	//Yi's code 
+	@Override
+	public int boardUpdate(BoardVo boardVo) throws Exception {
+		return boardDao.boardUpdate(boardVo);
+	}
 	
+	@Override
+	public int boardDelete(BoardVo boardVo) throws Exception {
+		return boardDao.boardDelete(boardVo);
+	}
+
+	@Override
+	public List<ComCodeVo> selectKindList() throws Exception {
+		// TODO Auto-generated method stub
+		return boardDao.selectKindList();
+	}
+
+	@Override
+	public int getKindCount(Map map) throws Exception {
+		// TODO Auto-generated method stub
+		return boardDao.getKindCount();
+	}
+	
+	
+
 }

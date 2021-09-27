@@ -1,6 +1,7 @@
 package com.spring.board.dao.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.spring.board.dao.BoardDao;
 import com.spring.board.vo.BoardVo;
+import com.spring.board.vo.ComCodeVo;
 import com.spring.board.vo.PageVo;
 
 @Repository
@@ -21,12 +23,9 @@ public class BoardDaoImpl implements BoardDao{
 		// TODO Auto-generated method stub
 		
 		String a = sqlSession.selectOne("board.boardList");
-		
 		return a;
 	}
-	/**
-	 * 
-	 * */
+
 	@Override
 	public List<BoardVo> selectBoardList(PageVo pageVo) throws Exception {
 		// TODO Auto-generated method stub
@@ -51,5 +50,27 @@ public class BoardDaoImpl implements BoardDao{
 		return sqlSession.insert("board.boardInsert", boardVo);
 	}
 	
+	// Yi's code
+	@Override
+	public int boardUpdate(BoardVo boardVo) throws Exception {
+		return sqlSession.update("board.boardUpdate", boardVo); 
+	}
+	
+	@Override
+	public int boardDelete(BoardVo boardVo) throws Exception {
+		return sqlSession.delete("board.boardDelete", boardVo); 
+	}
+	
+	public List<ComCodeVo> selectKindList() throws Exception {
+		return sqlSession.selectList("board.selectKindList");
+	}
+	
+	@Override
+	public int getKindCount() throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("board.getKindCount");
+	}
 	
 }
+
+
